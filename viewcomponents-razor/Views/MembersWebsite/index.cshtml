@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "Members";
+}
+@using viewcomponents_razor.Views.MembersWebsite.Components.Announcements
+
+@await Component.InvokeAsync(nameof(Announcements), "Announcements")
+
+
+ @section Scripts{
+        <script>
+            $(document).ready(function () {
+                alert('Index Ready');
+
+                    $("#exampleModal").on("submit", "#studyAdminActionForm", function (event) {
+                        alert('form submit in index');
+                //$.get("Home/RefreshStatus?status=Second", function (data) {
+                //    $('#productListVc').html(data);
+                //});
+            });
+            });
+
+        </script>
+    }
