@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace viewcomponent_samples.Services.Interfaces
 {
-    public class IAnnouncementService
+    public interface IAnnouncementService
     {
-
+        Task GetAnnouncements();
     }
 }

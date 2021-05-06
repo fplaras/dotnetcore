@@ -28,6 +28,10 @@ namespace viewcomponent_samples
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddHttpClient("omdbpApi", c =>
+            {
+                c.BaseAddress = new Uri(Configuration["OMDbAPI:url"]);
+            });
             services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
