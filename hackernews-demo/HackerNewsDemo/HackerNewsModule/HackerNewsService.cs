@@ -46,6 +46,33 @@ namespace HackerNewsModule
                 stories.NewStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.newstories);
             }
 
+            if (opts.IncludeAskStories)
+            {
+                stories.AskStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.askstories);
+            }
+
+            if (opts.IncludeBestStories)
+            {
+                stories.BestStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.beststories);
+            }
+
+            if (opts.IncludeJobStories)
+            {
+                stories.JobStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.jobstories);
+            }
+
+            if (opts.IncludeShowStories)
+            {
+                stories.ShowStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.showstories);
+            }
+
+            if (opts.IncludeTopStories)
+            {
+                stories.TopStories = await GetHackerNewsStories(HackerNewsEnums.StoryType.topstories);
+            }
+
+            
+
             return stories;
         }
         #endregion Business Logic

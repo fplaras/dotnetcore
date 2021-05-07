@@ -15,4 +15,8 @@
     <ProjectReference Include="..\HackerNewsModule\HackerNewsModule.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ActionFilters\" />
+  </ItemGroup>
+
 </Project>

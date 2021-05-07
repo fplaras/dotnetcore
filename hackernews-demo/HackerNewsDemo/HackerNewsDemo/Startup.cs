@@ -32,11 +32,24 @@ namespace HackerNewsDemo
             services.AddControllers();
             services.AddHttpClient<HackerNewsClient>();
             services.TryAddScoped<IHackerNewsService,HackerNewsService>();
+            //services.AddResponseCaching();
 
+            //services.AddMvc(options =>
+            //{
+            //    options.CacheProfiles.Add("Default5",
+            //        new CacheProfile()
+            //        {
+            //            Location = ResponseCacheLocation.Any,
+            //            Duration = 5
+            //        });
+            //});
+
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HackerNewsDemo", Version = "v1" });
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +67,8 @@ namespace HackerNewsDemo
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {
