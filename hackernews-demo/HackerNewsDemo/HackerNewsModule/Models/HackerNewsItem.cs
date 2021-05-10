@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace HackerNewsModule.Models
@@ -31,5 +32,16 @@ namespace HackerNewsModule.Models
 
         [JsonPropertyName("url")]
         public string Url { get; set; }
+
+        [JsonPropertyName("deleted")]
+        public bool Deleted { get; set; }
+
+        [JsonPropertyName("parts")]
+        public List<int> Parts { get; set; }
+
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
+
+
     }
 }

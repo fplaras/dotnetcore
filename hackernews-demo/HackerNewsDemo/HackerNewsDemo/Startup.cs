@@ -1,4 +1,6 @@
 using HackerNewsModule;
+using HackerNewsModule.Domain;
+using HackerNewsModule.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,7 +34,12 @@ namespace HackerNewsDemo
             services.AddControllers();
             services.AddHttpClient<HackerNewsClient>();
             services.TryAddScoped<IHackerNewsService,HackerNewsService>();
-            //services.AddResponseCaching();
+            services.AddResponseCaching();
+            services.AddAutoMapper(typeof(HackerNewsModule.MappingProfiles.AutoMapping));
+            services.AddHostedService<TimedHostedService>();
+
+            //services.AddDistributedMemoryCache();
+            //services.AddMemoryCache();
 
             //services.AddMvc(options =>
             //{
@@ -44,7 +51,8 @@ namespace HackerNewsDemo
             //        });
             //});
 
-            
+            services.AddDbContext<HackerNewsDataContext>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HackerNewsDemo", Version = "v1" });

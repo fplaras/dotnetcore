@@ -20,7 +20,7 @@ namespace HackerNewsModule
             Client = client;
         }
 
-        public async Task<HackerNewsItem> GetItem(string Id)
+        public async Task<HackerNewsItem> GetItem(int Id)
         {
             try
             {
@@ -63,6 +63,29 @@ namespace HackerNewsModule
             }
 
         }
+
+        public async Task<HackerNewsUpdates> GetHackerNewsUpdates()
+        {
+            try
+            {
+                var response = await Client.GetAsync("updates.json");
+
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                HackerNewsUpdates updates = JsonSerializer.Deserialize<HackerNewsUpdates>(json);
+
+                return updates;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
 
         public async Task<List<int>> GetStoriesByType(HackerNewsEnums.StoryType type)
         {

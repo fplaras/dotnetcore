@@ -1,4 +1,5 @@
 ﻿using HackerNewsModule;
+using HackerNewsModule.Enums;
 using HackerNewsModule.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,14 +13,17 @@ namespace HackerNewsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class HackerNews : ControllerBase
     {
         private readonly IHackerNewsService _service;
+
         public HackerNews(IHackerNewsService service)
         {
             _service = service;
         }
+
         // GET: api/<HackerNews>
         /// <summary>
         /// Get Hacker News Item by ID
@@ -28,9 +32,9 @@ namespace HackerNewsDemo.Controllers
         /// <param name="_service">Hacker News Service</param>
         /// <returns>List of Hacker News Items</returns>
         [HttpGet("item/{id}")]
-        public async Task<IActionResult> Item([FromRoute] string id)
+        public async Task<IActionResult> Item([FromRoute] int id)
         {
-            var response = await _service.GetHackerNewsItemById(id);
+            var response = await _service.GetHackerNewsItemDetails(id);
             return Ok(response);
         }
 
@@ -46,7 +50,7 @@ namespace HackerNewsDemo.Controllers
             if (includeDetails)
             {
                 int maxItem = await _service.GetHackerNewsMaxItem();
-                var item = await _service.GetHackerNewsItemById(maxItem.ToString());
+                var item = await _service.GetHackerNewsItemDetails(maxItem);
                 return Ok(item);
             }
             else
@@ -55,7 +59,6 @@ namespace HackerNewsDemo.Controllers
                 return Ok(maxItem);
             }
         }
-
 
         /// <summary>
         /// Get object of requested stories
@@ -85,14 +88,79 @@ namespace HackerNewsDemo.Controllers
         }
 
         /// <summary>
-        /// Get list of new stories
-        /// Cached for 30seconds
+        /// 
         /// </summary>
-        /// <param name="includeNewStories"></param>
-        /// <returns>List of new stories</returns>
-        [HttpGet("newstories")]
-        [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
-        public async Task<IActionResult> GetNewStories([FromQuery] bool includeNewStories) => 
-            Ok(await _service.GetStoryListByType(new HackerNewsSearchOptions { IncludeNewStories = includeNewStories}));
+        /// <param name="storyType"></param>
+        /// <returns></returns>
+        [HttpGet("all/{storyType}/details")]
+        public async Task<IActionResult> GetStories([FromRoute] string storyType)
+        {
+            if (Enum.IsDefined(typeof(HackerNewsEnums.StoryType), storyType))
+            {
+                var itemList = await _service.GetHackerNewsStories((HackerNewsEnums.StoryType)Enum.Parse(typeof(HackerNewsEnums.StoryType), storyType));
+                var stories = await _service.GetHackerNewsItemDetails(itemList);
+                return Ok(stories);
+            }
+            else
+            {
+                return BadRequest("Story Typoe does not exist.");
+            }
+        }
+        
+        /// <summary>
+        /// Get details of a list of items
+        /// </summary>
+        /// <param name="itemList"></param>
+        /// <returns>List of items with details</returns>
+        [HttpGet("item/list/details")]
+        public async Task<IActionResult> GetManyItemDetails([FromQuery] string itemList)
+        {
+            if (string.IsNullOrEmpty(itemList))
+                return BadRequest("No items listed in request");
+
+            //try to parse all elements of the string to int
+            (List<string> InvalidItems, List<int> ValidItems) processedItems = await ProcessItemListRequest(itemList);
+
+            if(processedItems.InvalidItems.Count > 0)
+            {
+                return BadRequest("Invalid Item IDs: " + string.Join(",",processedItems.InvalidItems));
+            }
+
+            if (processedItems.ValidItems.Count == 0)
+            {
+                return BadRequest("No items listed in request");
+            }
+
+            var itemListDetails = await _service.GetHackerNewsItemDetails(processedItems.ValidItems);
+
+            return Ok(itemListDetails);
+        }
+
+
+
+
+        #region Helper Methods
+        private async Task<(List<string> InvalidItems, List<int> ValidItems)> ProcessItemListRequest(string itemList)
+        {
+            List<int> validItems = new List<int>();
+            List<string> invalidItems = new List<string>();
+            foreach (var item in itemList.Split(","))
+            {
+                int itemId = 0;
+                if (int.TryParse(item, out itemId))
+                {
+                    validItems.Add(itemId);
+                }
+                else
+                {
+                    invalidItems.Add(item);
+                }
+            }
+
+            (List<string>, List<int>) processedItems = new (invalidItems, validItems);
+
+            return processedItems;
+        }
+        #endregion
     }
 }

@@ -14,5 +14,6 @@ namespace HackerNewsModule.Models
         public bool IncludeAskStories { get; set; }
         public bool IncludeJobStories { get; set; }
         public bool IncludeShowStories { get; set; }
+        public bool IncludeDetails { get; set; }
     }
 }

@@ -1,4 +1,6 @@
+using AutoMapper;
 using HackerNewsModule;
+using HackerNewsModule.Domain;
 using HackerNewsModule.Enums;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -13,9 +15,14 @@ namespace HackerNewsServiceUnitTest
     {
         private readonly IHackerNewsService _service;
         private HttpClient client = new HttpClient();
-        public HackerNewsServiceTest()
+        private readonly IMapper _mapper;
+        private readonly HackerNewsDataContext _context;
+
+        public HackerNewsServiceTest(IMapper mapper, HackerNewsDataContext context)
         {
-            _service = new HackerNewsService(new HackerNewsClient(client));
+            _mapper = mapper;
+            _context = context;
+            _service = new HackerNewsService(new HackerNewsClient(client), _context, _mapper);
         }
 
         [TestMethod]
@@ -64,7 +71,7 @@ namespace HackerNewsServiceUnitTest
                 var maxItem = await _service.GetHackerNewsMaxItem();
                 if(maxItem > 0)
                 {
-                    var item = await _service.GetHackerNewsItemById(maxItem.ToString());
+                    var item = await _service.GetHackerNewsItemDetails(maxItem);
 
                     Assert.IsTrue(item.Id > 0, "Max Item Retrievable");
                 }
